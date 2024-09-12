@@ -1,0 +1,45 @@
+---
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Start Apache Service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Copy index.html
+      copy:
+        content: |
+          <html>
+          <head>
+            <title>Hello World</title>
+          </head>
+          <body>
+            <h1>Hello World!</h1>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+
+    - name: Install SSL Certificates (Self-signed or from ACM)
+      shell: |
+        openssl req -x509 -newkey rsa:2048 -nodes -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt -days 365 \
+        -subj "/CN=localhost"
+
+    - name: Configure Apache for SSL
+      lineinfile:
+        path: /etc/apache2/sites-available/default-ssl.conf
+        regexp: 'SSLCertificateFile'
+        line: 'SSLCertificateFile /etc/ssl/certs/apache-selfsigned.crt'
+
+    - name: Enable SSL and restart Apache
+      shell: |
+        a2enmod ssl
+        a2ensite default-ssl
+        systemctl restart apache2
