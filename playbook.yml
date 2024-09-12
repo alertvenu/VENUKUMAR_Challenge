@@ -43,3 +43,23 @@
         a2enmod ssl
         a2ensite default-ssl
         systemctl restart apache2
+
+- hosts: localhost
+  tasks:
+    - name: Ensure Apache is installed
+      command: apache2ctl -v
+      register: apache_installed
+
+    - name: Check Apache is running
+      service_facts:
+    - name: Test for HTTP Response
+      uri:
+        url: "http://{{ inventory_hostname }}"
+        return_content: yes
+      register: result
+
+    - name: Check the web page content
+      assert:
+        that:
+          - "'Hello World' in result.content"
+
