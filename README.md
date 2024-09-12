@@ -13,3 +13,10 @@ Installs Apache.
 Deploys a basic index.html.
 Configures a self-signed SSL certificate.
 Configures Apache to listen on HTTPS and redirects HTTP requests to HTTPS.
+
+**Automated Tests with Ansible**
+
+Verify Apache is installed and running.
+Check that the "Hello World" page is being served.
+
+This configuration helps you deploy a scalable and secure static web app in AWS using best practices for security (HTTPS with SSL) and scalability (ELB).
